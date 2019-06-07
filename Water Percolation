@@ -1,0 +1,108 @@
+##############################################################################
+from random import random
+import numpy as np
+import matplotlib.pyplot as plt
+##############################################################################
+
+
+##############################################################################
+#Parameters
+#M x N matrix with t repetitions
+#M, N, t = 210, 210, 100
+t = 100
+notFlooded = 1
+##############################################################################
+
+
+##############################################################################
+class PercolatedException(Exception): 
+    pass
+##############################################################################
+    
+ 
+##############################################################################
+def newGrid(p, N):
+    cells = [[int(random() < p) for m in range(N)] for n in range(N)]
+    return cells
+##############################################################################
+    
+
+##############################################################################
+def checkCell(cell, M):
+    n, walkIndex = 0, 1
+    center = int(n/2)
+    try:
+        for m in range(M):
+            if cell[center][m - 1 - center] == notFlooded:
+                walkIndex += 1
+                walkMaze(m, center, cell, walkIndex, M)
+    except PercolatedException as ex:
+        return ex
+    return None
+##############################################################################
+    
+
+##############################################################################
+def walkMaze(m, n, cell, indx, N):
+    #Flood cell
+    cell[n][m] = indx
+    #Search down
+    if n < N - 1 and cell[n+1][m] == notFlooded:
+        walkMaze(m, n+1, cell, indx, N)
+    #Reached bottom
+    elif n == N - 1:
+        raise PercolatedException((m, indx))
+    #Search left
+    if m and cell[n][m - 1] == notFlooded:
+        walkMaze(m-1, n, cell, indx, N)
+    #Search right
+    if m < N - 1 and cell[n][m + 1] == notFlooded:
+        walkMaze(m+1, n, cell, indx, N)
+    #Search up
+    if n and cell[n-1][m] == notFlooded:
+        walkMaze(m, n-1, cell, indx, N)
+##############################################################################
+        
+    
+##############################################################################
+def probPerc(n, pcount, result):
+    if n <= 0:
+        return result
+    else:
+       result[n - 1] = pcount[(n - 1) / 10.0] / t
+       probPerc(n - 1, pcount, result)
+##############################################################################
+       
+       
+##############################################################################
+def genPlot(y):
+    size = len(y)
+    x = np.linspace(0, 1, size)
+    plt.plot(x, y)
+##############################################################################
+
+
+##############################################################################
+def probCount(N):
+    pCount = {}
+    for p10 in range(11):
+        p = p10 / 10.0
+        pCount[p] = 0
+        for tries in range(t):
+            cell = newGrid(p, N)
+            percolated = checkCell(cell, N)
+            if percolated:
+                pCount[p] += 1
+            else:
+                pass
+    #return pCount
+##############################################################################
+    
+
+##############################################################################
+pCount = probCount(20)
+size = len(pCount)
+probVector = np.zeros(size)
+probPerc(size, pCount, probVector)
+genPlot(probVector)
+##############################################################################
