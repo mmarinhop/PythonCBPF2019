@@ -1,0 +1,58 @@
+##############################################################################
+#Here we import the packages
+import numpy as np
+import matplotlib.pyplot as plt
+##############################################################################
+
+
+##############################################################################
+#This function returns an 8B number
+def out_patt(number):
+    output_pattern = [int(x) for x in np.binary_repr(number, width = 8)]
+    
+    return output_pattern
+##############################################################################
+    
+
+##############################################################################
+#This function generates the evolution rule; a matrix with eight rows an three columns describing each possible combination of a system composed of three objects and two states.
+def inp_patt(number_objects):
+    rows = 2**number_objects
+    input_pattern = np.zeros((rows, number_objects))
+    
+    for i in np.arange(rows):
+        input_pattern[i, :] = [int(x) for x in np.binary_repr(rows - 1 - i, width = number_objects)]
+        
+    return input_pattern
+##############################################################################
+    
+
+##############################################################################
+#This function implements the evolution rule over the initial state. 
+#\sigma(0) --(ER)--> \sigma(1) --(ER)--> ... --(ER)--> \sigma(N).
+def cel_aut(number, columns):
+    cells = 3
+    inp_num = inp_patt(cells)
+    out_num = out_patt(number)
+    size = 2**cells
+    rows = int(columns/2) + 1
+    
+    fig = np.zeros([rows, columns + 2])
+    fig[0, int(columns/2) + 1] = 1
+    
+    for i in np.arange(0, rows - 1):
+        for j in np.arange(0, columns):
+            for k in range(size):
+                if np.array_equal(inp_num[k, :], fig[i, j:j+3]):
+                    fig[i + 1, j + 1] = out_num[k]
+                else:
+                    pass
+                    
+    return fig
+##############################################################################
+    
+
+##############################################################################
+plt.spy(cel_aut(89, 600))
+plt.show()
+##############################################################################
