@@ -21,7 +21,7 @@ class PercolatedException(Exception):
     
  
 ##############################################################################
-#Generates the grid
+#Generates the water system
 def newGrid(p, N):
     cells = [[int(random() < p) for m in range(N)] for n in range(N)]
     return cells
