@@ -96,7 +96,7 @@ def probCount(N):
                 pCount[p] += 1
             else:
                 pass
-    #return pCount
+    return pCount
 ##############################################################################
     
 
